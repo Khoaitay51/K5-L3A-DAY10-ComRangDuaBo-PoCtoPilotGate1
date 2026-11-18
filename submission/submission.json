@@ -1,12 +1,12 @@
 {
   "team": "K5-L3A-DAY10-ComRangDuaBo-PoCtoPilotGate1",
   "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "incident": "S3",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Ngày hiệu lực (`effective_from`/`effective_to`) của chính sách do Ops nhập luôn đúng, và tracking ghi đúng nguyên nhân trễ (`delay_cause`) khi có ghi. Trong mùa bão, tài xế có thể nhập CARRIER cho ca thực ra do bão, và khi đó mọi cổng đều tin dữ liệu sai.",
+    "reduce_or_prevent": "Cổng NGĂN được ba nhánh đã thấy: dùng chính sách hết hạn (`pre_guard` ghim theo ngày hiệu lực), tự hoàn vượt `auto_limit_vnd`, và ghi lỗi khi nguyên nhân trống hoặc không thuộc `fault_causes`. Cả ba kiểm trực tiếp trên nguồn sự thật, không dựa vào model. Nhưng cổng chỉ GIẢM tác hại cho hãng: trần 2 lỗi mỗi hãng mỗi ngày vẫn để 2 lỗi đầu tự động, và không cổng nào bắt được ca tracking ghi sai nguyên nhân.",
+    "measure_in_pilot": "Đo tỉ lệ lỗi ghi cho hãng bị hãng khiếu nại và được xác nhận oan, tách theo mùa bão và theo hãng. Đo `policy_index_drift_rate` và `unrecorded_cause_rate` trên dữ liệu tracking thật. Đo tỉ lệ chuyển người và thời gian chờ thật của chị Hạnh khi lượng ticket tăng sau bão, vì MockLLM tất định và bộ thử không có ca tracking nhập sai."
   }
 }
