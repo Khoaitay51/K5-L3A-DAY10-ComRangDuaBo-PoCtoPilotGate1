@@ -1,6 +1,6 @@
 # Phiếu C · Sự cố và quyết định v2 · Khối 3 (phút 125–200)
 
-**Bàn:** ______ · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
+**Bàn:** ComRangDuaBo · **Thẻ đã bốc:** S3 *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
 
 Mở `incidents/Sx/card.md` của đúng số đã bốc. Các bước trên thẻ trỏ về đúng mục trong phiếu này. Mục C3 chỉ điền phần ứng với
 số thẻ của bàn; các phần khác để trống.
@@ -30,10 +30,10 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | | Sx · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | | | | | |
-| 2 | | Sx · after | | | | | | |
-| 3 | | Sx · after | | | | | | |
-| 4 | | base · after | (kiểm không regression) | | | | | |
+| 1 | `R-S3-prepared-20261118-170352-92fd25` (grade `R-S3-grade-20261118-170351-92fd25`) | S3 · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | 0,6667 [0,3333; 1,0] trên 30 lần chạy (base: 0,25 [0,0; 0,5] trên 60 lần chạy) | 0,6667 (base 0,25) | 900.000đ · 5 · 0 (base: 900.000đ · 35 · 0) | 0,0 | Cổng vòng 1 giảm lỗi oan từ 35 xuống 5, nhưng một phần nhờ cắt kho CT/DN khỏi phạm vi (độ phủ còn 0,5). Hai lỗi do chính sách cũ (`S3-02`, `S3-04`) vẫn còn nguyên |
+| 2 | `R-S3-after-20261118-171108-42332e` | S3 · after | Code: `pre_guard` ghim chính sách theo ngày hiệu lực; `write_gate` kiểm `auto_limit_vnd` theo chính sách hiệu lực; thêm 2 monitor | 1,0 [1,0; 1,0] trên 30 lần chạy (vẫn chỉ HN, HCM) | 1,0 | 0 · 0 · 0 | 0,1667 | Trong phạm vi HN/HCM đã sạch: `S3-02` được hoàn theo v4, `S3-04` chuyển người duyệt |
+| 3 | `R-S3-after-20261118-171123-050aa8`, rồi `R-S3-after-20261118-171202-3167ca` | S3 · after | (a) Config: mở lại `pilot_scope` tất cả kho, để kiểm cổng thật trên ca bão miền Tây → còn 10 lỗi oan (`S3-42`, `S3-43`). (b) Code: `write_gate` thêm trần `max_auto_strikes_per_carrier_per_day = 2` (từ `ops_limits`) | (b) 1,0 [1,0; 1,0] trên 60 lần chạy, độ phủ 1,0 | 1,0 | 0 · 0 · 0 | 0,0833 | Đủ 4 kho mà vẫn sạch, ROI 1,46: cổng chặn được thật, không cần giấu ca khỏi phạm vi |
+| 4 | `R-base-after-20261118-171203-3167ca` · grade `R-S3-grade-20261118-171211-3167ca` | base · after | (kiểm không regression) | 1,0 [1,0; 1,0] trên 110 lần chạy | 1,0 | 0 · 0 · 0 | 0,2364 | Không ca nào của bộ nền bị hỏng. Grade: **PASS-VISIBLE**, cả 6 mục kiểm ✅, được phép cân nhắc Tiếp tục |
 
 ---
 
@@ -47,19 +47,31 @@ Chạy **trước khi sửa bất cứ thứ gì**:
 python3 -m lab10.grade --incident Sx
 ```
 
-- Mã lần chạy grade: `__________` · base: `__________` · prepared: `__________`
-- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): …
-- Khối kinh doanh và vận hành còn dòng nào vượt trần: …
+- Mã lần chạy grade: `R-S3-grade-20261118-170351-92fd25` · base: `R-S3-before-20261118-170351-92fd25` · prepared: `R-S3-prepared-20261118-170352-92fd25`. Kiểm: integrity ✅ · criteria ✅ (`2b34e917`, không đổi) · cổng vòng 1 đã chốt `a037ebb9`, còn nguyên · thẻ S3 khớp · regression ✅ · monitor ❌ (chưa có chỉ số mới).
+  - *Ghi chú:* lần grade trước đó, `R-S3-grade-20261118-170305-7795e6`, báo integrity ❌. Nguyên nhân là máy chạy lệnh đã đổi xuống dòng LF thành CRLF khi pull (`core.autocrlf`). Nội dung các file khoá trùng git. Bàn đổi lại LF rồi chạy lại; số liệu không đổi.
+- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared):
+  - Lỗi ghi oan cho hãng **35 → 5**; tiền hoàn thiếu **667.000đ → 90.000đ**; pass_rate **0,25 → 0,6667**.
+  - Nhờ cổng `file_carrier_fault` (chỉ ghi khi `H.carrier_at_fault` đúng và `carrier_fault_requires_recorded_cause = true`): ví dụ `S3-21` (HCM, `delay_cause = null`) không còn bị ghi lỗi DNB; hãng DNB và MKD trong phạm vi đều pass 1,0.
+  - **Nhưng** một phần cải thiện đến từ `pilot_scope = HN, HCM`: kho CT và DN (gồm phần lớn đơn MKD miền Tây kẹt bão như `S3-01`, `S3-05`, `S3-20`, `S3-42`) bị cắt khỏi phạm vi. Độ phủ của gói sự cố còn **0,5**. Các ca bão này không chạy qua trợ lý ở mốc prepared mà bị đẩy sang làm tay. Về logic, cổng `file_carrier_fault` dùng `fault_causes` của chính sách theo ngày (v4 chỉ còn CARRIER), nên lẽ ra chặn được. Nhưng report chưa có bằng chứng, vì các ca đó không nằm trong phạm vi.
+- Khối kinh doanh và vận hành còn dòng nào vượt trần:
+  - **VƯỢT TRẦN: ROI −4,49 < 0,1** trên gói S3 (base −2,59).
+  - Ngưỡng đã ký chưa đạt: pass_rate 0,6667 < 0,90; pass_k 0,6667 < 0,85; hoàn sai **900.000đ** > 0 (`S3-04`, 180.000đ × 5 seed); lỗi oan **5** > 0 (`S3-04` ghi lỗi VNX).
+  - → **Không đủ căn cứ chọn Tiếp tục.**
 
 **Mở lại pre-mortem (Phiếu B mục B6), viết bằng bút khác màu.** Với thẻ S1, S3, S4, S5 đây là một phần của phần riêng theo thẻ.
 
-- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? …
-- Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? …
+- Sự cố trên thẻ thuộc lăng kính nào? Gốc là **kỹ thuật** (concept drift: chính sách đổi ngày 01/12 nhưng cờ `index_active` vẫn trỏ `REFUND-v3`). Tác hại rơi vào **pháp lý** (hãng MKD là bên thứ ba bị phạt 120.000đ/lỗi). Có cả **con người và vận hành**: "không thấy ai bên LogiX xác nhận", vì `review_sampling_pct = 0` nên không ai soát các lệnh ghi lỗi tự động.
+- Có nằm trong các lý do bàn đã viết không? **Một phần.** (Cổng vòng 1 đã tính quyền lợi theo `H.effective_policy`, tức theo ngày, nhưng chỉ ở `write_gate` và không kiểm `auto_limit_vnd`.)
+  - Bản đồ dữ liệu ở B3 đã dự đoán đúng drift này: "từ 01/12/2026 `REFUND-v4` … loại `FORCE_MAJEURE` khỏi `fault_causes`", và ghi `index_active` "có thể cập nhật trễ".
+  - Pre-mortem B6 dòng 5 (pháp lý) có ý "ghi lỗi hãng khi `cause_recorded = false`". Cổng vòng 1 đã đỡ được nhánh này: 35 → 5 lỗi oan.
+  - **Không** có lý do nào ở B6 nói về việc trợ lý chọn sai phiên bản chính sách. Cổng vòng 1 dùng đúng chính sách theo ngày khi soát lệnh ghi, nhưng **không ghim chính sách cho agent** (`pre_guard`) và không kiểm hạn mức tự động. Vì vậy hai ca `S3-02` (agent tự từ chối) và `S3-04` (vượt hạn mức v4) lọt qua. Bàn đã thấy rủi ro ở B3 nhưng không biến nó thành cổng, vì cả bộ nền chạy ở ngày 16/11, khi v3 còn hiệu lực thật, nên không có ca nào hỏng để nhắc.
 - Lý do còn thiếu, thêm bây giờ:
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được bằng gì (trace / data / config nào) |
 |---|---|---|
-| | | |
+| Trợ lý đã chọn chính sách theo cờ `index_active` (bản sao cập nhật trễ), không theo `effective_from`/`effective_to` so với ngày xử lý. Sau 01/12 nó vẫn dùng `REFUND-v3`: ghi lỗi hãng cho ca bão, từ chối khách trễ 2 ngày, và tự hoàn tới 200.000đ thay vì hạn mức 100.000đ của v4. | Kỹ thuật | Trace sự kiện `policy.policy_id` so với `world.as_of` và `policies[].effective_from/to`; ví dụ `S3-02@11`, `S3-04@11` |
+| Không ai bên LogiX soát các lệnh ghi lỗi hãng tự động. Hãng nhận liền nhiều lỗi trong ngày mà không có người xác nhận, và chỉ biết qua khiếu nại Zalo. | Con người và vận hành | `operations.review_sampling_pct = 0` trong `config/operating_gates.json`; report "nhân viên kiểm lại quyết định tự động 0%" |
+| Cắt kho CT/DN khỏi phạm vi đã làm số lỗi oan đẹp lên, nhưng không sửa nguyên nhân. Khi mở lại miền Tây, hoặc khi kho HN/HCM gặp bão, lỗi sẽ quay lại. | Kinh doanh | Report: độ phủ pilot 0,5; bảng theo kho có kho CT/DN là "—" ở prepared |
 
 ---
 
@@ -76,33 +88,33 @@ python3 -m lab10.trace --suite Sx --ticket <ID> --seed 11
 Ba loại lỗi: **giới hạn của hệ thống** · **lỗi ngữ cảnh** · **lỗi chìm** (cả người dùng lẫn hệ thống đều không nhận ra; nguy hiểm nhất,
 người chịu hại thường là bên thứ ba). Định nghĩa đầy đủ và ví dụ: Phiếu B mục B2.
 
-**Tác hại của thẻ:** cho ai `____` · đo bằng gì `____` · bao nhiêu ở mốc base `____`
+**Tác hại của thẻ:** cho ai `hãng vận chuyển và tài xế (chủ yếu Mekong Delta Ship – MKD), kèm khách trễ 2 ngày bị từ chối sai` · đo bằng gì `wrongful_carrier_faults (số lỗi ghi oan; mỗi lỗi bị phạt 120.000đ) và under_refund_vnd (tiền hoàn thiếu cho khách)` · bao nhiêu ở mốc base `35 lỗi oan / 60 lần chạy (≈ 4.200.000đ phạt oan nếu mỗi lỗi bị phạt 120.000đ) · hoàn thiếu 667.000đ · hoàn sai 900.000đ (R-S3-before-20261118-170351-92fd25)`
 
 ### Phần 1 · Ghi lỗi (bằng chứng là mã ticket@seed và dòng trace, không tả chung chung)
 
 | # | Lỗi: người ta thấy gì (dán dòng trace / sổ cái) | Ai gặp, ai chịu | Hệ trọng (thấp / cao) | Loại lỗi (giới hạn hệ thống / ngữ cảnh / chìm) |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| 1 | **Từ chối sai vì dùng chính sách cũ.** `S3-02@11` (đơn O-2302, HN, GHSH): `02 tracking {"db_delay_days": 2, "cause": "CARRIER"}` → `03 policy {"policy_id": "REFUND-v3"}` (trong khi `as_of = 2026-12-02` đã thuộc `REFUND-v4`, hiệu lực từ 01/12) → `04 proposal {"amount_vnd": 0}` → `send_reply "theo chính sách hiện hành đơn chưa đủ điều kiện"`. Nhãn: hoàn 18.000đ và ghi lỗi GHSH (v4: trễ ≥ 2 ngày là được hoàn phí). Còn hỏng ở cả base lẫn prepared, 5/5 seed. | Khách C-01 gặp và chịu (thiếu 18.000đ). CSKH nhận phàn nàn ("thông báo chính sách mới ghi từ 2 ngày là được hoàn"). | Cao: sai với mọi khách trễ đúng 2 ngày sau 01/12 | **Lỗi ngữ cảnh**: hệ thống "chạy đúng thiết kế" (đọc cờ `index_active`), nhưng khách thấy sai vì trái với thông báo chính sách mới họ đã đọc |
+| 2 | **Tự hoàn vượt hạn mức mới và ghi lỗi hãng không qua duyệt.** `S3-04@11` (đơn O-2304, HN, VNX, trễ 8 ngày): `03 policy {"policy_id": "REFUND-v3"}` → `04 proposal {"amount_vnd": 180000, "do_fault": true}` → `05 issue_refund 180000, "approval_id": null` → `06 file_carrier_fault {"carrier_id": "VNX", "delay_days": 8}`. Cổng vòng 1 đã tính quyền lợi theo chính sách **theo ngày** (`H.effective_policy` → v4): 30.000đ phí + min(10% × 1.500.000đ, 300.000đ) = **180.000đ**, đúng bằng số agent đề xuất, nên cho qua. Nhưng v4 có **hạn mức tự động `auto_limit_vnd` = 100.000đ** (v3 là 200.000đ), và **không cổng nào kiểm hạn mức này**. Nhãn: `escalated`, 0đ, không ghi lỗi. | LogiX chịu khoản 180.000đ chi ra không có phê duyệt. Chị Hạnh (trưởng ca) bị bỏ qua. Hãng VNX nhận lỗi mà không ai xác nhận. | Cao: tạo ra toàn bộ **900.000đ hoàn sai và 5 lỗi oan còn lại ở mốc prepared** | **Lỗi chìm**: khách vui vì được hoàn, hệ thống báo `refunded`, không ai biết khoản này đáng lẽ phải qua người duyệt |
+| 3 | **Ghi lỗi hãng khi tracking chưa có nguyên nhân hoặc trễ do bão.** `S3-20@11` (mốc base, O-2320, CT, MKD): `02 tracking {"cause": "CARRIER", "cause_recorded": false}` (DB trống `delay_cause`, code tự điền CARRIER) → `06 file_carrier_fault {"carrier_id": "MKD", "driver_id": "TX-MKD-05"}`. Cùng họ: `S3-01@11` có `cause: "FORCE_MAJEURE"` (bão số 9) nhưng v3 vẫn tính FORCE_MAJEURE là lỗi hãng → `file_carrier_fault MKD`. Nhãn: `faults: []` ở cả hai. | Hãng MKD và tài xế TX-MKD-05/07 chịu: 120.000đ phạt mỗi lỗi, đúng tin nhắn của điều phối Mekong Delta Ship. LogiX chịu tranh chấp đối soát. | Cao: hại bên thứ ba; chiếm phần lớn 35 lỗi oan ở base | **Lỗi chìm** với LogiX (khách được hoàn đúng, hệ thống coi là xong). Chỉ lộ ra khi hãng khiếu nại |
 
 ### Phần 2 · Tìm nguồn (đánh dấu câu nào đúng với từng lỗi)
 
 | Câu hỏi | Lỗi 1 | Lỗi 2 | Lỗi 3 |
 |---|---|---|---|
-| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | | | |
-| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | | | |
-| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | | | |
-| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | | | |
+| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | ✘ Khách không khai số ngày (`claimed_delay_days: null`); câu "nghe nói từ tháng 12 có chính sách mới" không được dùng, và cũng không nên dùng | ✘ | ✘ |
+| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | ✘ Dữ liệu đủ: `REFUND-v4` có sẵn trong `policies` | ✘ | **✔ Nguồn chính.** `delay_cause = null` (dữ liệu **thiếu**, guideword INCOMPLETE). Code mặc định thiếu là `CARRIER` (`agent.py`: `unknown cause -> blame carrier`), tức nghiêng hẳn về phía đổ lỗi cho hãng |
+| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | **✔ Nguồn chính.** "Phiên bản đang hiệu lực" có hai nơi ghi: cờ `index_active` (bản sao, Ops bật tay, đang trỏ v3) và `effective_from/effective_to` (nguồn sự thật: v4 từ 01/12). Agent tin cờ (guideword INVALID) | **✔ Nguồn chính**, cùng gốc với lỗi 1: agent lấy `auto_limit_vnd = 200.000đ` của v3 thay vì 100.000đ của v4. Cổng vòng 1 đã chọn đúng v4 theo ngày, nhưng chỉ so số tiền với **quyền lợi**, không so với **hạn mức tự động**, nên khoản 180.000đ (đúng quyền lợi nhưng vượt hạn mức) lọt qua | Một phần: với `S3-01`, `fault_causes` của v3 còn FORCE_MAJEURE, v4 đã bỏ (cùng gốc chính sách cũ) |
+| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | ✘ | ✘ | ✘ (không có `llm_error`) |
 
 ### Phần 3 · Hướng xử lý (mỗi lỗi một ô)
 
 | | Lỗi 1 | Lỗi 2 | Lỗi 3 |
 |---|---|---|---|
-| Vì sao người gặp coi đây là lỗi | | | |
-| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | | | |
-| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | | | |
-| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | | | |
+| Vì sao người gặp coi đây là lỗi | Khách đã đọc thông báo chính sách mới "trễ từ 2 ngày là được hoàn", nhưng trợ lý trả lời "chưa đủ điều kiện theo chính sách hiện hành" | Chị Oanh đối soát sẽ thấy khoản 180.000đ vượt hạn mức 100.000đ mà không có `approval_id`. VNX khiếu nại lỗi không có người LogiX xác nhận | Điều phối MKD: phụ lục mới ghi "trễ do bão lũ thì không ghi lỗi hãng", và đơn chưa ghi nguyên nhân thì không thể quy cho hãng |
+| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | **Khác: sửa bằng code ở `pre_guard`.** Agent *từ chối*, tức không có lệnh ghi nào, nên `write_gate` không bao giờ chạy với ca này. Cần ghim chính sách theo ngày hiệu lực ngay từ đầu: `pre_guard` trả `Verdict.allow(policy_id=H.effective_policy(...)["policy_id"])` để agent tính theo v4. Kèm ghi chú quyết định "chính sách theo ngày là v4" | **Trao quyền cho người, sửa ở `write_gate`:** khi `issue_refund` có `amount_vnd` > `auto_limit_vnd` của chính sách **theo ngày hiệu lực** (100.000đ) mà không có `approval_id` hợp lệ thì `escalate` cho chị Hạnh. Khi đó lệnh ghi lỗi hãng sau nó cũng không chạy | **Khác: chặn bằng code**: không ghi lỗi hãng (`deny`) khi `delay_cause` trống, hoặc khi nguyên nhân không thuộc `fault_causes` của chính sách theo ngày (v4 bỏ FORCE_MAJEURE). Vẫn hoàn phí cho khách nếu đủ điều kiện |
+| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Ticket chuyển chị Hạnh kèm ghi chú → chị duyệt hoàn 18.000đ theo v4 → khách nhận trả lời có dẫn chính sách mới. Trong lúc chờ: Ops sửa cờ `index_active` | Ticket vào hàng chờ duyệt → chị Hạnh duyệt hoặc giảm số tiền → ghi `approval_id` → hoàn. Lỗi hãng chỉ ghi sau khi người xác nhận nguyên nhân | Khách vẫn được hoàn phí tự động. Hãng không nhận lỗi. Ca `delay_cause` trống được đưa vào danh sách để đội tracking bổ sung nguyên nhân rồi mới xét lỗi hãng |
+| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | Đề xuất `policy_version_mismatch_rate`: tỉ lệ lần chạy có `policy.policy_id` khác chính sách có hiệu lực theo ngày. Ngưỡng báo động là > 0 | Cùng chỉ số `policy_version_mismatch_rate`, cộng thêm số khoản tự hoàn có `amount_vnd` > hạn mức theo ngày | Đề xuất `fault_without_recorded_cause`: số lệnh `file_carrier_fault` ở lần chạy có `tracking.cause_recorded = false` hoặc `cause` không thuộc `fault_causes`. Ngưỡng báo động ≥ 1/ngày |
 
 Yêu cầu: ít nhất **hai lỗi có nguồn khác nhau** ở phần 2, và ít nhất một lỗi được xếp đúng là **lỗi chìm**.
 
@@ -220,8 +232,10 @@ Mở lại Phiếu B mục B3. Ghi ở đây những dòng đổi so với vòng
 
 | Trường / bảng | Vòng 1 bàn đã coi là (nguồn sự thật / bản sao / chưa hỏi) | Sau khi đọc thẻ thì thấy | Ảnh hưởng tới tiền hay lỗi hãng thế nào |
 |---|---|---|---|
-| | | | |
-| | | | |
+| `policies[].index_active` | **Bản sao** ("cờ tra cứu có thể cập nhật trễ", B3), nhưng không có cổng nào kiểm | Đúng là bản sao **đã trễ**: ngày `as_of = 2026-12-02`, cờ vẫn bật ở `REFUND-v3` (`effective_to = 2026-11-30`, đã hết hạn), còn `REFUND-v4` (`effective_from = 2026-12-01`) có cờ `false`. Agent tin cờ này. Cổng vòng 1 thì đã chọn theo ngày, nhưng chỉ chạy khi có lệnh ghi, nên không cứu được ca agent tự từ chối | Kéo theo ba sai cùng lúc: ghi lỗi hãng cho ca bão (v3 còn FORCE_MAJEURE trong `fault_causes`), từ chối khách trễ 2 ngày (v3 đòi ≥ 3 ngày), tự hoàn tới 200.000đ thay vì 100.000đ (`auto_limit_vnd`) |
+| `policies[].effective_from` / `effective_to` | **Nguồn sự thật** (Ops ghi khi ban hành) | Vẫn là nguồn sự thật **duy nhất** về "phiên bản đang hiệu lực": chọn chính sách có `effective_from ≤ ngày xử lý ≤ effective_to` (`null` = chưa hết hạn) | Dùng trường này thì ra v4: `S3-02` được hoàn 18.000đ, `S3-04` phải chuyển người duyệt, `S3-01` không ghi lỗi MKD |
+| `policies[].fault_causes` | Nguồn sự thật về nguyên nhân nào thì ghi lỗi hãng; vòng 1 chỉ dự đoán drift ở B3 | Quy tắc nghiệp vụ **đã đổi** (concept drift): v4 chỉ còn `["CARRIER"]`, bỏ `FORCE_MAJEURE` theo phụ lục ký với hãng | Mỗi ca bão bị áp v3 là một lỗi oan 120.000đ cho hãng |
+| `orders[].parcels[].delay_cause` | Nguồn sự thật từ tracking; `null` = "chưa có nguyên nhân" | Khi `null`, code **mặc định `CARRIER`** (`cause_recorded: false`). Trường trống đang nghiêng về phía đổ lỗi cho hãng | Ghi lỗi oan cho MKD/DNB (`S3-20`, `S3-21`). Cổng vòng 1 (`carrier_fault_requires_recorded_cause`) đã chặn được trong phạm vi HN/HCM |
 
 ---
 
@@ -315,9 +329,10 @@ python3 -m lab10.grade --incident Sx
 
 | Nhánh fault tree | Nguyên nhân | Chỗ sửa (hàm + nhánh trong `guards.py`, hoặc khoá trong `operating_gates.json`) | Tầng (phát hiện / chặn / giới hạn thiệt hại / vận hành) | GIẢM khả năng hay NGĂN hẳn? Vì sao | Mã lần chạy sau khi sửa |
 |---|---|---|---|---|---|
-| [1] | | | | | |
-| [2] | | | | | |
-| [3] | | | | | |
+| [1] Trợ lý áp chính sách đã hết hạn | Agent chọn chính sách theo cờ `index_active` (bản sao trễ, còn trỏ v3), không theo `effective_from/to`. Hậu quả: từ chối khách trễ 2 ngày (`S3-02`), dùng hạn mức 200.000đ của v3 | `pre_guard`: so `H.effective_policy(..., ctx.as_of)` với chính sách có `index_active`; lệch thì `Verdict.allow(policy_id=<theo ngày>)` và ghi sự kiện `guard_policy_pinned` | Chặn (trước khi agent đọc ticket) | **NGĂN**, với điều kiện `effective_from/to` đúng: agent không còn đường nào dùng chính sách hết hạn. Không ngăn được nếu chính Ops nhập sai ngày hiệu lực | `R-S3-after-20261118-171108-42332e` |
+| [2] Tự hoàn vượt hạn mức, không qua duyệt | `issue_refund` 180.000đ (`S3-04`) vượt `auto_limit_vnd` 100.000đ của v4; cổng vòng 1 chỉ so với quyền lợi | `write_gate`, nhánh `tool == "issue_refund"`: `amount_vnd > policy.auto_limit_vnd` (chính sách theo ngày), không có `approval_id`, payer không phải shop → `escalate` cho chị Hạnh | Chặn, rồi chuyển người | **NGĂN** khoản tự hoàn vượt hạn mức, nhờ hai lớp: agent đã được ghim v4, và cổng kiểm lại độc lập. Chỉ còn rủi ro nếu agent gắn một `approval_id` không đúng ca (cổng này chưa soát) | `R-S3-after-20261118-171108-42332e` |
+| [3] Ghi lỗi hãng cho ca bão hoặc chưa có nguyên nhân | v3 còn FORCE_MAJEURE trong `fault_causes`; `delay_cause = null` bị mặc định CARRIER | Đã có từ vòng 1: `write_gate` nhánh `file_carrier_fault` → `H.carrier_at_fault` theo chính sách hiệu lực (v4 chỉ còn CARRIER, `null` không thuộc danh sách) → `deny`. Vòng 2: **mở lại `business.pilot_scope` tất cả kho** để chứng minh cổng chặn thật ở CT/DN | Chặn | **NGĂN** đúng hai trường hợp này. Không thấy ca tracking ghi sai nguyên nhân (ghi CARRIER cho ca thực ra do bão) | `R-S3-after-20261118-171123-050aa8` |
+| [4] Hãng nhận dồn nhiều lỗi trong một ngày không ai xác nhận | Loạt `S3-40…43`: 4 lỗi MKD cùng ngày, vượt trần Ops `max_auto_strikes_per_carrier_per_day = 2` | `write_gate`, nhánh `file_carrier_fault`: đếm `ctx.tools.fault_rows(carrier_id=…)` trong ngày ≥ trần → `deny` (khách vẫn được hoàn; lỗi thứ 3 trở đi chờ người xác nhận) | Giới hạn thiệt hại | **GIẢM**: hãng vẫn có thể nhận tối đa 2 lỗi tự động mỗi ngày, và 2 lỗi đó có thể vẫn oan nếu tracking sai. Cổng chỉ chặn thiệt hại dồn | `R-S3-after-20261118-171202-3167ca` |
 
 ---
 
@@ -330,14 +345,14 @@ Thẻ S5 dùng mục này cho một con số kinh doanh: chi phí mỗi ticket t
 
 | | Chỉ số theo dõi mới của bàn |
 |---|---|
-| **Tên trong `MONITORS`** | |
-| **Bước / hành vi được đo** | |
-| **Thước đo** (một câu, có đơn vị) | |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |
-| **Khung thời gian / ngưỡng báo động** | |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | |
+| **Tên trong `MONITORS`** | `policy_index_drift_rate` (chính) · thêm `unrecorded_cause_rate` |
+| **Bước / hành vi được đo** | Bước **chọn chính sách**: cờ `index_active` có khớp phiên bản hiệu lực theo ngày không · phụ: bước **tracking**, nguyên nhân trễ có được ghi không |
+| **Thước đo** (một câu, có đơn vị) | Tỉ lệ ticket (%) mà chính sách phải ghim lại vì cờ `index_active` lệch ngày hiệu lực · phụ: tỉ lệ ticket (%) trễ mà tracking chưa ghi nguyên nhân |
+| **Dữ liệu** (trường nào của trial, không có nhãn) | `trial["events"]`: sự kiện `policy` với trường `pinned` (true khi `pre_guard` ghim phiên bản theo ngày) · sự kiện `tracking` với trường `cause_recorded` |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Số trial có `policy.pinned = true` ÷ tổng số trial. Trial không tới bước `policy` (bị chặn sớm hoặc ngoài phạm vi) vẫn ở mẫu số và tính là không lệch · phụ: số trial có `tracking.cause_recorded = false` ÷ tổng số trial |
+| **Khung thời gian / ngưỡng báo động** | Theo ngày. **Báo động khi `policy_index_drift_rate` > 0** ở bất kỳ ngày nào: báo `#ops-alerts-cskh` để Ops chuyển cờ trong ngày (cổng vẫn giữ an toàn trong lúc chờ). `unrecorded_cause_rate` > 10%/ngày → báo đội tracking bổ sung nguyên nhân |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không thấy trường hợp chính `effective_from/to` bị nhập sai (cả cờ lẫn ngày cùng sai). Phụ thuộc `pre_guard`: nếu cổng bị tắt, chỉ số về 0 dù vẫn drift. Không thấy nguyên nhân bị ghi **sai** (chỉ thấy bị **thiếu**) |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | `policy_index_drift_rate`: bộ nền **0,0** · S3 **1,0** (mốc after) · `unrecorded_cause_rate`: bộ nền **0,0** · S3 **0,1667** (cả base lẫn after). Grade: `6 monitor ✅`, sáng đèn |
 
 ---
 

@@ -46,6 +46,16 @@ def _load_order_context(ctx, action):
 
 
 def pre_guard(ctx):
+    # Vòng 2 (S3): chính sách hiệu lực lấy theo effective_from/effective_to (nguồn sự thật), KHÔNG theo cờ
+    # index_active (bản sao, Ops bật tay, có thể trễ). Khi hai nguồn lệch nhau, ghim phiên bản theo ngày để agent
+    # tính tiền, hạn mức tự động (auto_limit_vnd) và nguyên nhân được ghi lỗi hãng (fault_causes) theo đúng chính sách.
+    policies = ctx.tools.lookup_policies()
+    effective = H.effective_policy(policies, ctx.as_of)
+    indexed = next((p for p in policies if p.get("index_active")), None)
+    if effective and (indexed is None or indexed["policy_id"] != effective["policy_id"]):
+        ctx.log("guard_policy_pinned", effective=effective["policy_id"],
+                index_active=indexed["policy_id"] if indexed else None)
+        return Verdict.allow(policy_id=effective["policy_id"])
     return Verdict.allow()
 
 
@@ -61,6 +71,14 @@ def write_gate(ctx, action):
                 ctx.log("guard_refund_mismatch", entitled=entitled, requested=action.get("amount_vnd", 0))
                 return Verdict.escalate("số tiền hoàn vượt quyền lợi theo tracking DB, chuyển người duyệt")
 
+        # Vòng 2 (S3): hạn mức tự động theo chính sách HIỆU LỰC THEO NGÀY (v4: 100.000đ), không theo bản agent tự chọn.
+        if policy and not action.get("approval_id") and action.get("payer") != "MERCHANT":
+            limit = policy.get("auto_limit_vnd")
+            if limit is not None and action.get("amount_vnd", 0) > limit:
+                ctx.log("guard_over_auto_limit", limit=limit, requested=action.get("amount_vnd", 0),
+                        policy_id=policy["policy_id"])
+                return Verdict.escalate("vượt hạn mức hoàn tự động của chính sách đang hiệu lực, chuyển người duyệt")
+
         cap = (ctx.gates or {}).get("business", {}).get("daily_refund_cap_vnd")
         if cap is not None and not action.get("approval_id"):
             spent = ctx.tools.auto_refund_today_vnd()
@@ -72,6 +90,15 @@ def write_gate(ctx, action):
             if not H.carrier_at_fault(policy, parcel, db_delay) or action.get("delay_days") != db_delay:
                 ctx.log("guard_fault_blocked", db_delay=db_delay, action_delay=action.get("delay_days"))
                 return Verdict.deny("không đủ điều kiện ghi lỗi hãng hoặc lệch số ngày trễ so với tracking DB")
+        # Vòng 2 (S3): trần Ops đã thống nhất, từ lỗi thứ (max + 1) của CÙNG một hãng trong ngày phải có người xác nhận.
+        # Không tự ghi thêm; khoản hoàn cho khách (đã ghi trước đó) giữ nguyên.
+        max_strikes = ctx.tools.ops_limits().get("max_auto_strikes_per_carrier_per_day")
+        carrier_id = action.get("carrier_id")
+        if max_strikes is not None and carrier_id:
+            today = len(ctx.tools.fault_rows(carrier_id=carrier_id))
+            if today >= max_strikes:
+                ctx.log("guard_carrier_strike_cap", carrier_id=carrier_id, today=today, cap=max_strikes)
+                return Verdict.deny("đã đủ trần lỗi tự động cho hãng này trong ngày, chờ người xác nhận")
 
     elif tool == "notify_carrier":
         payload = dict(action.get("payload") or {})

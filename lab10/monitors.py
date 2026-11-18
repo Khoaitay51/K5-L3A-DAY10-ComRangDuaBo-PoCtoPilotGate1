@@ -19,7 +19,26 @@ def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def policy_index_drift_rate(trials):
+    """S3 · concept drift: tỉ lệ ticket mà cờ index_active của bảng chính sách KHÁC phiên bản có hiệu lực theo ngày.
+    Tín hiệu: sự kiện `policy` có "pinned": true (pre_guard phải ghim lại phiên bản theo effective_from/effective_to).
+    Không cần nhãn. Bình thường = 0; > 0 nghĩa là Ops chưa chuyển cờ sau khi chính sách mới có hiệu lực."""
+    def drifted(t):
+        return any(e.get("type") == "policy" and e.get("pinned") for e in t["events"])
+    return sum(drifted(t) for t in trials) / max(1, len(trials))
+
+
+def unrecorded_cause_rate(trials):
+    """S3 · dữ liệu thiếu (INCOMPLETE): tỉ lệ ticket mà tracking trễ nhưng CHƯA ghi nguyên nhân (cause_recorded = false).
+    Đây là chỗ code gốc tự điền CARRIER, nên tăng là dấu hiệu nguy cơ ghi oan cho hãng."""
+    def missing(t):
+        return any(e.get("type") == "tracking" and e.get("cause_recorded") is False for e in t["events"])
+    return sum(missing(t) for t in trials) / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "policy_index_drift_rate": policy_index_drift_rate,
+    "unrecorded_cause_rate": unrecorded_cause_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
