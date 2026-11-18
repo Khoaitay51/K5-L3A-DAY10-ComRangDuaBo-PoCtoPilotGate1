@@ -406,7 +406,7 @@ bao nhiêu thời gian? (3) Có phần nào của dự án không nên làm ti�
 | Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | |
 | Nếu Dừng: bài học ghi lại | |
 | Một bằng chứng còn thiếu (thứ bộ nền chưa đo được) | |
-| Ngày quyết định lại (trừ khi Dừng) | |
+| Ngày quyết định lại (trừ khi Dừng) | 25/11/2026 (dự kiến, theo Phiếu A) |
 | PIC ký | |
 
 Xong v1 thì lưu và đẩy một bản (sau mốc này không sửa cột v1):
