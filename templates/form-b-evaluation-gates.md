@@ -258,11 +258,11 @@ Bốn lăng kính (bắt buộc đủ cả bốn; dự án AI hay chết ở ba 
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được hôm nay? (trace / data / config nào) | Thành cổng phòng ngừa nào (code hay config) / hay vào risk register |
 |---|---|---|---|
-| | Kỹ thuật | | |
-| | Kinh doanh | | |
-| | Con người và vận hành | | |
-| | Pháp lý | | |
-| | | | |
+| Trợ lý đã tin lời khách tự khai (`trust_claim: true`, `model_override`) thay vì tracking DB, gây hoàn tiền sai và ghi oan cho hãng như ở `T-002@55`. | Kỹ thuật | Có (`trace`: `03 model_override`, `02 tracking.db_delay_days`) | **Cổng 1 (`lab10/guards.py`):** `write_gate` đối chiếu số ngày trễ và mức hoàn theo tracking DB trước `issue_refund` và `file_carrier_fault`; lệch thì `escalate`/`deny`. |
+| Khách chèn chỉ dẫn giả (`directive`) hoặc gửi nhiều ticket cho cùng một đơn khiến trợ lý hoàn tiền trùng hoặc vượt thẩm quyền không có duyệt. | Kỹ thuật | Có (`trace`: `01 llm_extract`, `tools.ledger_rows`, `lookup_approvals`) | **Cổng 2 (`lab10/guards.py`):** `write_gate` kiểm tra sổ cái chống hoàn trùng và kiểm tra `approval_id` hợp lệ trước khi `issue_refund`. |
+| Không đặt trần hoàn tự động theo ngày và ngân sách LLM/ticket khiến tổng tiền hoàn vượt mức Finance cho phép, làm ROI tụt dưới 10%. | Kinh doanh | Có (`eval` khối kinh doanh & vận hành; `config/operating_gates.json`) | **Cổng 3 (config + code):** đặt `business.daily_refund_cap_vnd`, `cost_budget_per_ticket_vnd` trong `operating_gates.json` và chặn vượt trần ngày trong `write_gate`. |
+| Giờ cao điểm lượng ca chuyển duyệt tăng gấp 3 trong khi chỉ 1 người trực (6 ca/giờ), làm hàng chờ ùn tắc quá SLA 60 phút. | Con người và vận hành | Có (`eval` hàng chờ người duyệt; `operating_gates.json` mục `operations`) | **Vào Risk register & config (`operations`):** đặt `reviewers_on_shift`, `max_queue_wait_minutes`, `stop_conditions` và quy trình gọi thêm người trong Runbook. |
+| Thông báo `notify_carrier` chép nguyên văn lời khách có chứa SĐT/địa chỉ cá nhân ra ngoài, hoặc ghi lỗi hãng khi `cause_recorded = false`. | Pháp lý | Có (`trace`: `08 notify_carrier.payload`, `02 tracking.cause_recorded`) | **Vào Risk register & cổng (`legal` + `guards.py`):** bật `carrier_fault_requires_recorded_cause`, khai báo `pii_fields_blocked_to_third_party` và chặn/lọc PII ở `write_gate`. |
 
 ---
 
