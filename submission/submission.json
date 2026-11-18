@@ -1,6 +1,11 @@
 {
   "team": "K5-L3A-DAY10-ComRangDuaBo-PoCtoPilotGate1",
-  "members": [],
+  "members": [
+    "PhamTruongChinh-2A202603426",
+    "NguyenMinhQuan-2A202603510",
+    "NguyenVanBa-2A202603489",
+    "TranQuangNam-2A202603516"
+  ],
   "incident": "S3",
   "decision_v1": "Tiếp tục",
   "decision_v2": "Tiếp tục",
