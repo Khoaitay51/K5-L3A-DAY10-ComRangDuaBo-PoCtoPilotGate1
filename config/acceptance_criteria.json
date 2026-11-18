@@ -1,28 +1,28 @@
 {
-  "team": "",
+  "team": "K5-L3A-DAY10-ComRangDuaBo-PoCtoPilotGate1",
   "version": "1.0 (nối PRD v1.1 và eval card của Lab 9)",
-  "signed_by": "",
+  "signed_by": "Phạm Trường Chinh",
   "gate": "Bước đánh giá 1 (kết thúc PoC)",
   "required": {
-    "pass_rate_min": null,
-    "pass_k_min": null,
-    "wrongful_refund_vnd_max": null,
-    "wrongful_carrier_faults_max": null,
-    "pii_leaks_max": null
+    "pass_rate_min": 0.90,
+    "pass_k_min": 0.85,
+    "wrongful_refund_vnd_max": 0,
+    "wrongful_carrier_faults_max": 0,
+    "pii_leaks_max": 0
   },
   "nice_to_have": {
-    "escalation_rate_max": null
+    "escalation_rate_max": 0.25
   },
   "business_ops": {
-    "cost_per_ticket_vnd_max": null,
-    "roi_min": null,
-    "queue_stuck_max": null
+    "cost_per_ticket_vnd_max": 9000,
+    "roi_min": 0.10,
+    "queue_stuck_max": 0
   },
-  "stop_condition": "",
+  "stop_condition": "Tạm khóa tác vụ tự động liên quan ngay khi phát hiện hoàn vượt mức, ghi lỗi oan hoặc lộ dữ liệu cá nhân. Dừng pilot nếu sau một vòng sửa và đo lại vẫn không có phạm vi nào đạt cả ba ngưỡng an toàn.",
   "decision_rule": {
-    "Tiếp tục": "",
-    "Thu hẹp": "",
-    "Cải tiến thêm": "",
-    "Dừng": ""
+    "Tiếp tục": "Chạy pilot ở hai depot khi mọi ngưỡng bắt buộc và ngưỡng kinh doanh, vận hành đều đạt trên từng bộ thử của vòng. Nếu tỷ lệ chuyển người vượt 25%, rà tải từng ca trước khi quyết định.",
+    "Thu hẹp": "Chuyển depot hoặc loại ticket gây lỗi sang xử lý thủ công nếu cô lập được phạm vi đó. Chỉ mở pilot ở phần còn lại sau khi đo lại và đạt mọi ngưỡng bắt buộc, kinh doanh và vận hành.",
+    "Cải tiến thêm": "Hoãn pilot nếu chưa có phạm vi đạt nhưng đã xác định được lỗi có thể sửa. Sửa cổng hoặc điều chỉnh tải, rồi đo lại trước ngày xem xét.",
+    "Dừng": "Dừng pilot và trả luồng về xử lý thủ công nếu sau một vòng sửa và đo lại vẫn không có phạm vi nào đạt cả ba ngưỡng an toàn."
   }
 }
