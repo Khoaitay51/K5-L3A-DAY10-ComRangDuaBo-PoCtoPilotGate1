@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | Hành vi ghi nhận lỗi trách nhiệm cho bên thứ ba (`file_carrier_fault`) và phát lệnh hoàn tiền |
-| **Thước đo** (một câu, có đơn vị) | | Tỷ lệ khiếu nại tranh chấp lỗi giao hàng từ hãng vận chuyển trên tổng số lỗi hãng trợ lý đã ghi, đơn vị: % / ca trực |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | Sự kiện `file_carrier_fault` trong production trace đối chiếu với ticket/email khiếu nại bác bỏ từ hãng vận chuyển (GHSH, VNX); do chị Oanh (kế toán đối soát) hoặc CSKH tiếp nhận ghi nhận |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | Số ticket hãng khiếu nại bác bỏ chia cho tổng số lệnh `file_carrier_fault` phát ra trong ca. Nếu không phát lệnh ghi lỗi nào trong ca thì tỷ lệ mặc định là 0% |
+| **Bước / hành vi được đo** | Bước **ghi lỗi hãng**: agent quyết định ghi lỗi cho hãng nào, kiện nào (lệnh `file_carrier_fault`). Chọn bước này vì code đang mặc định đổ lỗi cho hãng khi tracking không ghi nguyên nhân (`lab10/agent.py`, dòng `unknown cause -> blame carrier`) | Hành vi ghi nhận lỗi trách nhiệm cho bên thứ ba (`file_carrier_fault`) và phát lệnh hoàn tiền |
+| **Thước đo** (một câu, có đơn vị) | Tỉ lệ lỗi hãng ghi oan: số cặp (hãng, kiện) agent đã ghi lỗi mà không có trong nhãn đúng, trên tổng số cặp agent đã ghi (đơn vị: %, trên mỗi lần chạy đánh giá) | Tỷ lệ khiếu nại tranh chấp lỗi giao hàng từ hãng vận chuyển trên tổng số lỗi hãng trợ lý đã ghi, đơn vị: % / ca trực |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | Lệnh `file_carrier_fault` (hãng, kiện) và sự kiện `tracking` (`cause`, `cause_recorded`, danh sách `parcels`) trong `runs/<mã lần chạy>/traces/`; nhãn là trường `label.faults` của từng ticket trong `data/tickets.jsonl`, do người soạn bộ thử gán theo tracking DB (nguồn sự thật). Mẫu: bộ nền 22 ticket × 5 seed = 110 lần chạy; vòng 2 tính thêm trên gói sự cố | Sự kiện `file_carrier_fault` trong production trace đối chiếu với ticket/email khiếu nại bác bỏ từ hãng vận chuyển (GHSH, VNX); do chị Oanh (kế toán đối soát) hoặc CSKH tiếp nhận ghi nhận |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Tỉ lệ = (số cặp (hãng, kiện) đã ghi ∉ `label.faults`) ÷ (tổng số cặp đã ghi trên mọi lần chạy). Lần chạy không tới bước ghi (từ chối, chuyển người duyệt, bị cổng chặn) bị loại khỏi mẫu số và đếm riêng; nếu mẫu số = 0 thì báo "không có lệnh ghi", không báo 0%. Báo kèm: số lệnh ghi khi `cause_recorded = false` và số cặp có trong nhãn mà agent không ghi (bỏ sót) | Số ticket hãng khiếu nại bác bỏ chia cho tổng số lệnh `file_carrier_fault` phát ra trong ca. Nếu không phát lệnh ghi lỗi nào trong ca thì tỷ lệ mặc định là 0% |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | Cửa sổ trượt 24 giờ (hoặc theo ca trực 8 giờ). Ngưỡng báo động đỏ: ≥ 1 khiếu nại lỗi ghi oan được xác nhận hoặc tỷ lệ khiếu nại > 5% trong ca → tự động cảnh báo kênh `operations.alert_channel` để dừng quyền ghi lỗi tự động |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | Độ trễ đối soát (hãng đối soát theo chu kỳ tuần nên không thấy ngay trong ngày); tài xế bị phạt oan 150.000đ nhưng không khiếu nại; hoặc trường hợp trợ lý hoàn tiền sai cho khách nhưng khách im lặng nhận |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | Không thấy ca chính tracking DB hoặc nhãn sai (nhãn chép từ DB); không thấy ghi đúng hãng nhưng sai mức phạt; bộ thử offline chỉ có các hãng và kiểu đơn đã biết, nên không đại diện cho hãng hoặc tình huống mới trong pilot (vì vậy cần thêm telemetry ở cột bên) | Độ trễ đối soát (hãng đối soát theo chu kỳ tuần nên không thấy ngay trong ngày); tài xế bị phạt oan 150.000đ nhưng không khiếu nại; hoặc trường hợp trợ lý hoàn tiền sai cho khách nhưng khách im lặng nhận |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
@@ -71,9 +71,9 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(a) · (b) · (c) · (d)**
+Số minh hoạ trong đề (không phải số của bàn). Khoanh: (a) · **(b) ✔** · (c) · (d)
 
-Giải thích một câu: …
+Giải thích một câu: Y chỉ hơn X đúng 1/50 lần chạy, và pass_rate 1,0 của Y vẫn nằm trong khoảng tin cậy 95% [0,9400; 1,0] của X, nên chưa đủ căn cứ nói Y tốt hơn. (a) sai vì chênh lệch nằm trong khoảng tin cậy. (c) sai vì "không phân biệt được" không có nghĩa là "chắc chắn như nhau". (d) sai vì X đạt hay không là do so với ngưỡng đã ký, không phải do số seed.
 
 ---
 
