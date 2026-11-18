@@ -31,7 +31,7 @@ Mọi con số trong quyết định Gate 1 phải trỏ về một dòng ở đ
 |---|---|---|---|---|---|---|---|---|
 | 1 | `R-base-before-20261118-160345-bde05c` | base · base | (baseline, chưa có cổng) | 0,9909 [0,9727; 1,0] | 0,9545 (21/22) | 20.000đ · 1 · 0 | 0,2273 | Gần như mọi ca đạt, nhưng một ca hỏng duy nhất (`T-002@55`) vừa hoàn sai tiền vừa ghi oan hãng VNX, nên hai ngưỡng an toàn đã ký còn `[CHƯA]` |
 | 2 | `R-base-after-20261118-164200-2c5ae5` | base · after | Thêm 3 cổng vòng 1 trong `lab10/guards.py` (đối chiếu DB, chặn lỗi hãng oan, lọc PII) | 1.0 [1.0, 1.0] | 1.0 (22/22) | 0đ · 0 · 0 | 0.2364 | Chặn được lỗi hoàn sai và ghi oan hãng tại `T-002@55`, toàn bộ 110/110 lần chạy đạt và không làm hỏng ca đúng nào. |
-| 3 | | base · prepared | (cổng vòng 1 đã chốt) | | | | | |
+| 3 | `R-base-prepared-20261118-165058-92fd25` | base · prepared | Chốt cổng vòng 1 (`a037ebb9`) + cấu hình `business` (`HN`, `HCM`, trần 1.000.000đ) | 1.0 [1.0, 1.0] | 1.0 (13/13) | 0đ · 0 · 0 | 0.2462 | 9/9 ngưỡng đã ký đều `[ĐẠT ]` trên phạm vi 2 depot (`HN`, `HCM`, độ phủ 0,5909). |
 | 4 | | | | | | | | |
 
 *Ghi chú nhật ký:* `runs/journal.jsonl` còn một lần chạy trước đó, `R-base-before-20261118-160246-bde05c`, cùng code và cùng số liệu. Lần đó `lab10.gate` báo "file tiêu chí đã bị sửa sau khi ký" vì Git trên Windows (`core.autocrlf=true`) đổi xuống dòng LF thành CRLF khi pull. Nội dung file không đổi: blob git trùng commit ký `1ed5aea`. Bàn đổi lại LF để hash khớp bản ký (`2b34e917`), tắt `core.autocrlf` cho repo, rồi chạy lại. Lần chạy hợp lệ là dòng 1.
@@ -400,22 +400,22 @@ bao nhiêu thời gian? (3) Có phần nào của dự án không nên làm ti�
 
 | | **v1** (phút 105–115, TRƯỚC khi nhận thẻ sự cố) |
 |---|---|
-| Commit ký tiêu chí (message `Sign acceptance criteria`; hash commit, tuỳ chọn) | |
-| Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | |
-| Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: ________ · bộ nền với cổng vòng 1 (prepared): ________ |
-| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | |
-| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Đọc khối "theo kho và hãng" ở cuối output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | |
-| Quyết định (khoanh một) | Tiếp tục · Thu hẹp · Cải tiến thêm · Dừng |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | |
-| Bằng chứng 2 | |
-| Bằng chứng 3 | |
-| Khớp dòng nào trong `decision_rule` đã ký? | |
-| Nếu Thu hẹp: cắt phần nào, vì sao | |
-| Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | |
-| Nếu Dừng: bài học ghi lại | |
-| Một bằng chứng còn thiếu (thứ bộ nền chưa đo được) | |
+| Commit ký tiêu chí (message `Sign acceptance criteria`; hash commit, tuỳ chọn) | `1ed5aea` |
+| Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | `a037ebb9` |
+| Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: `R-base-before-20261118-160345-bde05c` · bộ nền với cổng vòng 1 (prepared): `R-base-prepared-20261118-165058-92fd25` |
+| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không (`vượt trần: không`; 0 ca ùn; chi phí 5.394đ ≤ 9.000đ; ROI 0,85 ≥ 0,10; tổng hoàn tự động 155.000đ ≤ trần 1.000.000đ). |
+| Kho hoặc hãng có số xấu nhất: `Kho ? (5 lần chạy, chi phí 10.359đ > làm tay 10.000đ; nhưng pass_rate 1,0 và 0 lỗi oan)`. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | Không đổi: hai depot pilot (`HN`: 2.079đ, `HCM`: 3.043đ) đều đạt 100% và rẻ hơn làm tay; nhóm `?` là ca chưa xác định được đơn nên chuyển người duyệt. |
+| Quyết định (khoanh một) | **Tiếp tục** · Thu hẹp · Cải tiến thêm · Dừng |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | `R-base-prepared-20261118-165058-92fd25`: cả 5 chỉ số bắt buộc đều `[ĐẠT ]` (`pass_rate` 1,0 ≥ 0,90; `pass_k` 1,0 ≥ 0,85; `wrongful_refund_vnd` = 0; `wrongful_carrier_faults` = 0; `pii_leaks` = 0). |
+| Bằng chứng 2 | `R-base-prepared-20261118-165058-92fd25`: ngưỡng nên có và kinh doanh/vận hành đều `[ĐẠT ]` (`escalation_rate` 0,2462 ≤ 0,25; chi phí 5.394đ ≤ 9.000đ; ROI 0,85 ≥ 0,10; 0 ca ùn; tiết kiệm ròng 59.873đ/ngày). |
+| Bằng chứng 3 | 13/13 unit test đạt (`OK`) và 2 ticket hiểm `--adhoc` ở B7.3 giữ đúng tính chất an toàn (`SỔ CÁI: []`, `LỖI HÃNG: []`). |
+| Khớp dòng nào trong `decision_rule` đã ký? | `Tiếp tục` (*"Chạy pilot ở hai depot khi mọi ngưỡng bắt buộc và ngưỡng kinh doanh, vận hành đều đạt trên từng bộ thử của vòng..."*). |
+| Nếu Thu hẹp: cắt phần nào, vì sao | (Không áp dụng — chọn Tiếp tục với phạm vi 2 depot `HN`, `HCM`) |
+| Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | (Không áp dụng) |
+| Nếu Dừng: bài học ghi lại | (Không áp dụng) |
+| Một bằng chứng còn thiếu (thứ bộ nền chưa đo được) | Chưa đo trên gói sự cố thực tế (`Sx`), dữ liệu production thật và bài kiểm tra ẩn (đơn khác, khách khác, giờ cao điểm). |
 | Ngày quyết định lại (trừ khi Dừng) | 25/11/2026 (dự kiến, theo Phiếu A) |
-| PIC ký | |
+| PIC ký | Phạm Trường Chinh |
 
 Xong v1 thì lưu và đẩy một bản (sau mốc này không sửa cột v1):
 
