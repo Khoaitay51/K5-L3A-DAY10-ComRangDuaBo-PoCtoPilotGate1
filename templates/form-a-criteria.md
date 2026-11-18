@@ -24,8 +24,8 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): 100% giao dịch hoàn tiền tự động và lệnh ghi lỗi hãng phải có chứng từ/log hợp lệ; số tiền hoàn sai bằng 0 đồng (`wrongful_refund_vnd_max = 0`); không có lỗi ghi oan cho hãng vận chuyển (`wrongful_carrier_faults_max = 0`) để tránh tranh chấp bồi thường 150.000đ/lần phạt hoặc nguy cơ đình chỉ tài xế; số liệu sổ cái khớp tuyệt đối giữa LogiX, hãng và shop khi đối soát định kỳ.
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Các ca chuyển sang người duyệt phải có đầy đủ bằng chứng và ghi chú giải thích tóm tắt (`decision_note = true`) để thời gian duyệt dưới 10 phút/ca; lượng ca chuyển duyệt không vượt quá năng lực ca trực (6 ca/giờ/người, ca 480 phút) để không phát sinh ca bị ùn tắc (`queue_stuck_max = 0`) và thời gian chờ không vượt SLA 60 phút; trợ lý tuyệt đối không lạm dụng hoặc dùng sai các mã phê duyệt (`approval_id`) không hợp lệ hoặc đã hết hạn (`approval_bypass = 0`).
 
 ---
 
@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
-| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Bước / hành vi được đo** | | Hành vi ghi nhận lỗi trách nhiệm cho bên thứ ba (`file_carrier_fault`) và phát lệnh hoàn tiền |
+| **Thước đo** (một câu, có đơn vị) | | Tỷ lệ khiếu nại tranh chấp lỗi giao hàng từ hãng vận chuyển trên tổng số lỗi hãng trợ lý đã ghi, đơn vị: % / ca trực |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | Sự kiện `file_carrier_fault` trong production trace đối chiếu với ticket/email khiếu nại bác bỏ từ hãng vận chuyển (GHSH, VNX); do chị Oanh (kế toán đối soát) hoặc CSKH tiếp nhận ghi nhận |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | Số ticket hãng khiếu nại bác bỏ chia cho tổng số lệnh `file_carrier_fault` phát ra trong ca. Nếu không phát lệnh ghi lỗi nào trong ca thì tỷ lệ mặc định là 0% |
+| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | Cửa sổ trượt 24 giờ (hoặc theo ca trực 8 giờ). Ngưỡng báo động đỏ: ≥ 1 khiếu nại lỗi ghi oan được xác nhận hoặc tỷ lệ khiếu nại > 5% trong ca → tự động cảnh báo kênh `operations.alert_channel` để dừng quyền ghi lỗi tự động |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | | Độ trễ đối soát (hãng đối soát theo chu kỳ tuần nên không thấy ngay trong ngày); tài xế bị phạt oan 150.000đ nhưng không khiếu nại; hoặc trường hợp trợ lý hoàn tiền sai cho khách nhưng khách im lặng nhận |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
