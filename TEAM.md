@@ -12,8 +12,8 @@
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Phạm Trường Chinh | 2A202603426 | Kỹ sư cổng (Code & Monitor) | ✓ |
-|   2 | Nguyễn Minh Quân | 2A202603510 | Kỹ sư cổng (Eval, Trace & Kiểm thử) | |
-|   3 | Nguyễn Văn Ba | 2A202603489 | Sản phẩm và kinh doanh (Vận hành kinh doanh) | |
+|   2 | Nguyễn Văn Ba | 2A202603489 | Kỹ sư cổng (Eval, Trace & Kiểm thử) | |
+|   3 | Nguyễn Minh Quân | 2A202603510 | Sản phẩm và kinh doanh (Vận hành kinh doanh) | |
 |   4 | Trần Quang Nam | 2A202603516 | Vận hành và pháp lý | |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
@@ -52,7 +52,7 @@ Kỹ sư cổng (Code & Monitor), phụ trách `lab10/guards.py`, `lab10/monitor
 - Điều còn chưa chắc: Nếu Ops nhập sai ngày hiệu lực, `policy_index_drift_rate` có phát hiện đủ sớm để dừng tự hoàn không?
 - AI hỗ trợ tổng hợp mục cá nhân và soạn exit ticket từ lịch sử commit và Phiếu C.
 
-## NguyenMinhQuan-2A202603510
+##  NguyenVanBa-2A202603489
 
 ### Phần việc phụ trách
 
@@ -74,7 +74,7 @@ Kỹ sư cổng (Eval, Trace & Kiểm thử), phụ trách đánh giá bộ nề
 - Điều còn chưa chắc: Bộ 22 ticket có bao phủ đủ cách khách diễn đạt số ngày trễ và các trường hợp tracking mâu thuẫn với nội dung ticket thật không?
 - AI hỗ trợ tổng hợp mục cá nhân và soạn exit ticket từ lịch sử commit và Phiếu B.
 
-## NguyenVanBa-2A202603489
+## NguyenMinhQuan-2A202603510
 
 ### Phần việc phụ trách
 
